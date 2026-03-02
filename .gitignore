@@ -1,0 +1,33 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+## Godot import/cache (common in 4.x)
+.import/
+
+## Export templates / build outputs (keep project sources tracked)
+/build/
+/dist/
+/exports/
+/export/
+
+## Godot-generated logs (optional but usually safe to ignore)
+*.log
+
+## C# / Mono (only relevant if you enable C#)
+.mono/
+.vs/
+.idea/
+*.csproj
+*.sln
+*.user
+*.userprefs
+*.pidb
+*.booproj
+
+## OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
