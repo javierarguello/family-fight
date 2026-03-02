@@ -1,7 +1,20 @@
 extends CharacterBody2D
 
-const SPEED := 130.0
-const JUMP_VELOCITY := -300.0
+## Parametrizable fighter controller for 2-player support
+
+# ---- PLAYER IDENTITY ----
+@export_range(1, 2) var player_id: int = 1
+
+# ---- OPPONENT REFERENCE ----
+@export var opponent_path: NodePath
+var _opponent: CharacterBody2D
+
+# ---- CHARACTER DATA ----
+@export var character_data: CharacterData
+
+# ---- FALLBACK CONSTANTS (used if no character_data) ----
+const DEFAULT_SPEED := 130.0
+const DEFAULT_JUMP_VELOCITY := -300.0
 
 @export var anim_path: NodePath = ^"AnimatedSprite2D"
 @onready var voice: AudioStreamPlayer2D = $AudioStreamPlayer2D
@@ -21,11 +34,11 @@ const JUMP_VELOCITY := -300.0
 
 @onready var anim: AnimatedSprite2D = get_node_or_null(anim_path) as AnimatedSprite2D
 
-# ---- SOUNDS ----
-var punch_sound := preload("res://audio/mila_punch.wav")
-var double_punch_sound := preload("res://audio/mila_double_punch.wav")
-var power_kick_sound := preload("res://audio/mila_power_kick.wav")
-var jump_sound := preload("res://audio/mila_jump.wav")
+# ---- FALLBACK SOUNDS (used if no character_data) ----
+var _fallback_punch_sound: AudioStream = preload("res://audio/mila_punch.wav")
+var _fallback_double_punch_sound: AudioStream = preload("res://audio/mila_double_punch.wav")
+var _fallback_kick_sound: AudioStream = preload("res://audio/mila_power_kick.wav")
+var _fallback_jump_sound: AudioStream = preload("res://audio/mila_jump.wav")
 
 var is_attacking := false
 var current_attack: StringName = ""
@@ -43,12 +56,74 @@ var _min_x: float = 0.0
 var _max_x: float = 0.0
 var _half_width: float = 0.0
 
+# ---- INPUT ACTIONS (computed from player_id) ----
+var _input_left: StringName
+var _input_right: StringName
+var _input_jump: StringName
+var _input_punch: StringName
+var _input_kick: StringName
+
+
+# =========================================================
+# COMPUTED PROPERTIES
+# =========================================================
+
+func _get_speed() -> float:
+	if character_data:
+		return character_data.speed
+	return DEFAULT_SPEED
+
+
+func _get_jump_velocity() -> float:
+	if character_data:
+		return character_data.jump_velocity
+	return DEFAULT_JUMP_VELOCITY
+
+
+func _get_punch_sound() -> AudioStream:
+	if character_data and character_data.double_punch_sound:
+		return character_data.double_punch_sound
+	return _fallback_double_punch_sound
+
+
+func _get_kick_sound() -> AudioStream:
+	if character_data and character_data.kick_sound:
+		return character_data.kick_sound
+	return _fallback_kick_sound
+
+
+func _get_jump_sound() -> AudioStream:
+	if character_data and character_data.jump_sound:
+		return character_data.jump_sound
+	return _fallback_jump_sound
+
+
+func _get_punch_sound_frame() -> int:
+	if character_data:
+		return character_data.punch_sound_frame
+	return 2
+
+
+func _get_kick_sound_frame() -> int:
+	if character_data:
+		return character_data.kick_sound_frame
+	return 1
+
+
+func _get_jump_sound_frame() -> int:
+	if character_data:
+		return character_data.jump_sound_frame
+	return 1
+
 
 # =========================================================
 # READY
 # =========================================================
 
 func _ready() -> void:
+	_setup_input_actions()
+	_opponent = get_node_or_null(opponent_path) as CharacterBody2D
+
 	if anim == null:
 		push_error("AnimatedSprite2D no encontrado.")
 		return
@@ -57,10 +132,23 @@ func _ready() -> void:
 		push_error("SpriteFrames no asignado.")
 		return
 
+	# Apply character sprite_frames if provided
+	if character_data and character_data.sprite_frames:
+		anim.sprite_frames = character_data.sprite_frames
+
 	_half_width = _compute_half_width_from_collider()
 	call_deferred("_update_bounds_from_tilemap")
 
 	_play_if_changed("idle")
+
+
+func _setup_input_actions() -> void:
+	var prefix := "p%d_" % player_id
+	_input_left = StringName(prefix + "left")
+	_input_right = StringName(prefix + "right")
+	_input_jump = StringName(prefix + "jump")
+	_input_punch = StringName(prefix + "punch")
+	_input_kick = StringName(prefix + "kick")
 
 
 # =========================================================
@@ -77,10 +165,10 @@ func _physics_process(delta: float) -> void:
 	kick_buffer = maxf(0.0, kick_buffer - delta)
 	punch_buffer = maxf(0.0, punch_buffer - delta)
 
-	if Input.is_action_just_pressed("kick"):
+	if Input.is_action_just_pressed(_input_kick):
 		kick_buffer = attack_buffer_seconds
 
-	if Input.is_action_just_pressed("punch"):
+	if Input.is_action_just_pressed(_input_punch):
 		punch_buffer = attack_buffer_seconds
 
 	# -------------------------
@@ -92,20 +180,27 @@ func _physics_process(delta: float) -> void:
 	# -------------------------
 	# JUMP
 	# -------------------------
-	if Input.is_action_just_pressed("jump") and is_on_floor() and not is_attacking:
-		velocity.y = JUMP_VELOCITY
+	if Input.is_action_just_pressed(_input_jump) and is_on_floor() and not is_attacking:
+		velocity.y = _get_jump_velocity()
+
+	# -------------------------
+	# FACING DIRECTION (always face opponent)
+	# -------------------------
+	var facing_right := true
+	if _opponent != null:
+		facing_right = global_position.x < _opponent.global_position.x
+	anim.flip_h = not facing_right
 
 	# -------------------------
 	# MOVEMENT
 	# -------------------------
-	var direction := Input.get_axis("ui_left", "ui_right")
+	var direction := Input.get_axis(_input_left, _input_right)
 
 	if not is_attacking:
 		if direction != 0.0:
-			velocity.x = direction * SPEED
-			anim.flip_h = direction < 0.0
+			velocity.x = direction * _get_speed()
 		else:
-			velocity.x = move_toward(velocity.x, 0.0, SPEED)
+			velocity.x = move_toward(velocity.x, 0.0, _get_speed())
 	else:
 		velocity.x = 0.0
 
@@ -121,14 +216,16 @@ func _physics_process(delta: float) -> void:
 		return
 
 	# -------------------------
-	# GROUND STATE
+	# GROUND STATE (forward = toward opponent, back = away from opponent)
 	# -------------------------
 	if not is_attacking:
 		if direction != 0.0:
-			if direction < 0.0:
-				_play_walk_back(delta)
-			else:
+			# Determine if walking toward or away from opponent
+			var walking_toward_opponent := (direction > 0.0 and facing_right) or (direction < 0.0 and not facing_right)
+			if walking_toward_opponent:
 				_play_walk_forward()
+			else:
+				_play_walk_back(delta)
 		else:
 			_stop_walk_back()
 			_play_if_changed("idle")
@@ -310,13 +407,14 @@ func _play_if_changed(name: StringName) -> void:
 	anim.speed_scale = 1.0
 	anim.play(name)
 
+
 func _on_animated_sprite_2d_frame_changed() -> void:
-	if anim and anim.animation == "punch" and anim.frame == 2:
-		voice.stream = double_punch_sound
+	if anim and anim.animation == "punch" and anim.frame == _get_punch_sound_frame():
+		voice.stream = _get_punch_sound()
 		voice.play()
-	elif anim and anim.animation == "kick" and anim.frame == 1:
-		voice.stream = power_kick_sound
+	elif anim and anim.animation == "kick" and anim.frame == _get_kick_sound_frame():
+		voice.stream = _get_kick_sound()
 		voice.play()
-	elif anim and anim.animation == "jump" and anim.frame == 1:
-		voice.stream = jump_sound
+	elif anim and anim.animation == "jump" and anim.frame == _get_jump_sound_frame():
+		voice.stream = _get_jump_sound()
 		voice.play()
