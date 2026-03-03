@@ -19,7 +19,6 @@ extends Camera2D
 @export var enable_jump_zoom: bool = true
 @export var jump_zoom_amount: float = -0.15   # 0.15 = 15% zoom out
 @export_range(0.0, 20.0, 0.1) var zoom_speed: float = 6.0
-
 # --- DYNAMIC ZOOM (for 2 players) ---
 @export var enable_distance_zoom: bool = true
 @export var min_player_distance: float = 50.0
@@ -53,6 +52,7 @@ func _process(delta: float) -> void:
 
 	_update_follow(delta)
 	_update_zoom(delta)
+	_clamp_camera_to_limits()
 	_clamp_players_to_view()
 
 # -------------------------
@@ -135,6 +135,30 @@ func _update_limits_from_tilemap() -> void:
 	limit_right = int(ceil(right))
 	limit_top = int(floor(top))
 	limit_bottom = int(ceil(bottom))
+
+# -------------------------
+# CAMERA VIEW CLAMPING
+# -------------------------
+func _clamp_camera_to_limits() -> void:
+	var vp_size := get_viewport_rect().size
+	var half_w := (vp_size.x / zoom.x) * 0.5
+	var half_h := (vp_size.y / zoom.y) * 0.5
+
+	var visible_bottom := global_position.y + half_h
+	if visible_bottom > limit_bottom:
+		global_position.y -= visible_bottom - limit_bottom
+
+	var visible_top := global_position.y - half_h
+	if visible_top < limit_top:
+		global_position.y += limit_top - visible_top
+
+	var visible_left := global_position.x - half_w
+	if visible_left < limit_left:
+		global_position.x += limit_left - visible_left
+
+	var visible_right := global_position.x + half_w
+	if visible_right > limit_right:
+		global_position.x -= visible_right - limit_right
 
 # -------------------------
 # PLAYER CONTAINMENT
