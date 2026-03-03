@@ -284,6 +284,7 @@ size = Vector2(15, 57)
 
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 2
+collision_mask = 3
 script = ExtResource("1_tuyoq")
 player_id = null
 opponent_path = null

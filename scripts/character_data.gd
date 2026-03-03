@@ -8,7 +8,7 @@ extends Resource
 
 @export_group("Stats")
 @export var speed: float = 130.0
-@export var jump_velocity: float = -300.0
+@export var jump_velocity: float = -450.0
 @export var max_stamina: float = 100.0
 
 @export_group("Combat")

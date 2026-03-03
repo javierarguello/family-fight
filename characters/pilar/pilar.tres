@@ -11,7 +11,11 @@
 script = ExtResource("1_script")
 character_name = "Pilar"
 speed = 130.0
-jump_velocity = -300.0
+jump_velocity = -550.0
+max_stamina = 100.0
+punch_damage = 8.0
+kick_damage = 12.0
+hit_range = 45.0
 sprite_frames = ExtResource("6_frames")
 scale_factor = 1.5
 punch_sound = ExtResource("2_punch")

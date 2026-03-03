@@ -14,7 +14,7 @@ var _opponent: CharacterBody2D
 
 # ---- FALLBACK CONSTANTS (used if no character_data) ----
 const DEFAULT_SPEED := 130.0
-const DEFAULT_JUMP_VELOCITY := -300.0
+const DEFAULT_JUMP_VELOCITY := -550.0
 const DEFAULT_MAX_STAMINA := 100.0
 const DEFAULT_PUNCH_DAMAGE := 8.0
 const DEFAULT_KICK_DAMAGE := 12.0
@@ -243,6 +243,7 @@ func _physics_process(delta: float) -> void:
 		velocity.x = 0.0
 
 	move_and_slide()
+	_push_off_opponent()
 	_clamp_to_bounds()
 
 	# -------------------------
@@ -499,6 +500,22 @@ func _update_bounds_from_tilemap() -> void:
 	_max_x = right_edge - clamp_margin_right - _half_width
 
 	_has_bounds = _max_x > _min_x
+
+
+func _push_off_opponent() -> void:
+	if _opponent == null:
+		return
+	# After move_and_slide(), check if we landed on the opponent's head.
+	# If so, push horizontally to the nearest side so we slide off.
+	for i in get_slide_collision_count():
+		var col := get_slide_collision(i)
+		if col.get_collider() == _opponent and col.get_normal().y < -0.5:
+			var push_dir := signf(global_position.x - _opponent.global_position.x)
+			if push_dir == 0.0:
+				push_dir = 1.0
+			global_position.x += push_dir * 4.0
+			velocity.y = 0.0
+			break
 
 
 func _clamp_to_bounds() -> void:
