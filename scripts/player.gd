@@ -15,6 +15,14 @@ var _opponent: CharacterBody2D
 # ---- FALLBACK CONSTANTS (used if no character_data) ----
 const DEFAULT_SPEED := 130.0
 const DEFAULT_JUMP_VELOCITY := -300.0
+const DEFAULT_MAX_STAMINA := 100.0
+const DEFAULT_PUNCH_DAMAGE := 8.0
+const DEFAULT_KICK_DAMAGE := 12.0
+const DEFAULT_HIT_RANGE := 25.0
+
+# ---- STAMINA ----
+var max_stamina: float = DEFAULT_MAX_STAMINA
+var stamina: float = DEFAULT_MAX_STAMINA
 
 @export var anim_path: NodePath = ^"AnimatedSprite2D"
 @onready var voice: AudioStreamPlayer2D = $AudioStreamPlayer2D
@@ -36,6 +44,7 @@ const DEFAULT_JUMP_VELOCITY := -300.0
 
 var is_attacking := false
 var current_attack: StringName = ""
+var _hit_landed := false
 
 var kick_buffer := 0.0
 var punch_buffer := 0.0
@@ -62,6 +71,12 @@ var _input_kick: StringName
 # COMPUTED PROPERTIES
 # =========================================================
 
+func get_character_name() -> String:
+	if character_data:
+		return character_data.character_name
+	return "P%d" % player_id
+
+
 func _get_speed() -> float:
 	if character_data:
 		return character_data.speed
@@ -72,6 +87,24 @@ func _get_jump_velocity() -> float:
 	if character_data:
 		return character_data.jump_velocity
 	return DEFAULT_JUMP_VELOCITY
+
+
+func _get_punch_damage() -> float:
+	if character_data:
+		return character_data.punch_damage
+	return DEFAULT_PUNCH_DAMAGE
+
+
+func _get_kick_damage() -> float:
+	if character_data:
+		return character_data.kick_damage
+	return DEFAULT_KICK_DAMAGE
+
+
+func _get_hit_range() -> float:
+	if character_data:
+		return character_data.hit_range
+	return DEFAULT_HIT_RANGE
 
 
 func _get_punch_sound() -> AudioStream:
@@ -126,9 +159,12 @@ func _ready() -> void:
 		push_error("SpriteFrames no asignado.")
 		return
 
-	# Apply character sprite_frames if provided
-	if character_data and character_data.sprite_frames:
-		anim.sprite_frames = character_data.sprite_frames
+	# Apply character data
+	if character_data:
+		if character_data.sprite_frames:
+			anim.sprite_frames = character_data.sprite_frames
+		max_stamina = character_data.max_stamina
+		stamina = max_stamina
 
 	_fit_sprite_to_collider()
 	_half_width = _compute_half_width_from_collider()
@@ -252,17 +288,34 @@ func _physics_process(delta: float) -> void:
 # ATTACK
 # =========================================================
 
-func _do_attack(name: StringName) -> void:
-	if not anim.sprite_frames.has_animation(name):
+func _do_attack(attack_name: StringName) -> void:
+	if not anim.sprite_frames.has_animation(attack_name):
 		return
 
 	is_attacking = true
-	current_attack = name
+	current_attack = attack_name
+	_hit_landed = false
 	velocity.x = 0.0
 	_stop_walk_back()
 
 	anim.speed_scale = 1.0
-	anim.play(name)
+	anim.play(attack_name)
+
+
+func take_damage(amount: float) -> void:
+	stamina = maxf(0.0, stamina - amount)
+
+
+func _try_hit(damage: float) -> void:
+	if _hit_landed or _opponent == null:
+		return
+
+	var dist := global_position.distance_to(_opponent.global_position)
+	# hit_range is in local space, multiply by scale to get world distance
+	var world_range := _get_hit_range() * scale.x
+	if dist <= world_range:
+		_hit_landed = true
+		_opponent.take_damage(damage)
 
 
 # =========================================================
@@ -455,7 +508,9 @@ func _play_voice(stream: AudioStream) -> void:
 func _on_animated_sprite_2d_frame_changed() -> void:
 	if anim and anim.animation == "punch" and anim.frame == _get_punch_sound_frame():
 		_play_voice(_get_punch_sound())
+		_try_hit(_get_punch_damage())
 	elif anim and anim.animation == "kick" and anim.frame == _get_kick_sound_frame():
 		_play_voice(_get_kick_sound())
+		_try_hit(_get_kick_damage())
 	elif anim and anim.animation == "jump" and anim.frame == _get_jump_sound_frame():
 		_play_voice(_get_jump_sound())

@@ -9,6 +9,13 @@ extends Resource
 @export_group("Stats")
 @export var speed: float = 130.0
 @export var jump_velocity: float = -300.0
+@export var max_stamina: float = 100.0
+
+@export_group("Combat")
+@export var punch_damage: float = 8.0
+@export var kick_damage: float = 12.0
+## Max distance (in local pixels, before scene scale) to land a hit
+@export var hit_range: float = 25.0
 
 @export_group("Visuals")
 @export var sprite_frames: SpriteFrames
