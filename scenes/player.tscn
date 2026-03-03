@@ -1,11 +1,11 @@
 [gd_scene load_steps=43 format=3 uid="uid://bj16y217wul51"]
 
-[ext_resource type="Texture2D" uid="uid://bbplisb0t4nwi" path="res://sprites/animate-idle-stance-.png" id="1_3vyb7"]
+[ext_resource type="Texture2D" uid="uid://b4oe2dbodg4f3" path="res://characters/mila/sprites/idle.png" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://duc731koobn7m" path="res://scripts/player.gd" id="1_tuyoq"]
-[ext_resource type="Texture2D" uid="uid://dtm6xbqj07b1l" path="res://sprites/animate-a-jump-on-th.png" id="2_dqkch"]
-[ext_resource type="Texture2D" uid="uid://bdvqteavy4nd2" path="res://sprites/animate-kick-for-a-f.png" id="2_g2els"]
-[ext_resource type="Texture2D" uid="uid://bwp1x8japr4gq" path="res://sprites/animate-walking-sequ.png" id="3_qhqgy"]
-[ext_resource type="Texture2D" uid="uid://qomgvwwtk7hy" path="res://sprites/animate-a-punch-sequ.png" id="4_qlg0r"]
+[ext_resource type="Texture2D" uid="uid://i65nf7en75r" path="res://characters/mila/sprites/jump.png" id="2_dqkch"]
+[ext_resource type="Texture2D" uid="uid://cmsnlm72eva84" path="res://characters/mila/sprites/kick.png" id="2_g2els"]
+[ext_resource type="Texture2D" uid="uid://3jrkayf0fmas" path="res://characters/mila/sprites/walk.png" id="3_qhqgy"]
+[ext_resource type="Texture2D" uid="uid://dhx1n3ityvpja" path="res://characters/mila/sprites/punch.png" id="4_qlg0r"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3vyb7"]
 atlas = ExtResource("1_3vyb7")

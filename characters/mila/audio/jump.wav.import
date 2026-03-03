@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://1bems37p0xle"
-path="res://.godot/imported/mila_punch.wav-f8695580908bff10ec126f60f14f83b0.sample"
+uid="uid://cvmwk1amuvqgd"
+path="res://.godot/imported/jump.wav-b776b8dc31022953d22d9b09a1e95f44.sample"
 
 [deps]
 
-source_file="res://audio/mila_punch.wav"
-dest_files=["res://.godot/imported/mila_punch.wav-f8695580908bff10ec126f60f14f83b0.sample"]
+source_file="res://characters/mila/audio/jump.wav"
+dest_files=["res://.godot/imported/jump.wav-b776b8dc31022953d22d9b09a1e95f44.sample"]
 
 [params]
 

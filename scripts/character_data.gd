@@ -12,6 +12,8 @@ extends Resource
 
 @export_group("Visuals")
 @export var sprite_frames: SpriteFrames
+## Overall scale multiplier for sprite and collider (1.0 = fit to default collider)
+@export_range(0.1, 5.0, 0.05) var scale_factor: float = 1.0
 
 @export_group("Audio")
 @export var punch_sound: AudioStream

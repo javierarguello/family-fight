@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dtm6xbqj07b1l"
-path="res://.godot/imported/animate-a-jump-on-th.png-03f31a6cc84bcb9792d6decdadd4f6fe.ctex"
+uid="uid://dhx1n3ityvpja"
+path="res://.godot/imported/punch.png-067d35e9299c5ad7280952e89d991e42.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/animate-a-jump-on-th.png"
-dest_files=["res://.godot/imported/animate-a-jump-on-th.png-03f31a6cc84bcb9792d6decdadd4f6fe.ctex"]
+source_file="res://characters/mila/sprites/punch.png"
+dest_files=["res://.godot/imported/punch.png-067d35e9299c5ad7280952e89d991e42.ctex"]
 
 [params]
 

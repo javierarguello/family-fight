@@ -34,12 +34,6 @@ const DEFAULT_JUMP_VELOCITY := -300.0
 
 @onready var anim: AnimatedSprite2D = get_node_or_null(anim_path) as AnimatedSprite2D
 
-# ---- FALLBACK SOUNDS (used if no character_data) ----
-var _fallback_punch_sound: AudioStream = preload("res://audio/mila_punch.wav")
-var _fallback_double_punch_sound: AudioStream = preload("res://audio/mila_double_punch.wav")
-var _fallback_kick_sound: AudioStream = preload("res://audio/mila_power_kick.wav")
-var _fallback_jump_sound: AudioStream = preload("res://audio/mila_jump.wav")
-
 var is_attacking := false
 var current_attack: StringName = ""
 
@@ -81,21 +75,21 @@ func _get_jump_velocity() -> float:
 
 
 func _get_punch_sound() -> AudioStream:
-	if character_data and character_data.double_punch_sound:
+	if character_data:
 		return character_data.double_punch_sound
-	return _fallback_double_punch_sound
+	return null
 
 
 func _get_kick_sound() -> AudioStream:
-	if character_data and character_data.kick_sound:
+	if character_data:
 		return character_data.kick_sound
-	return _fallback_kick_sound
+	return null
 
 
 func _get_jump_sound() -> AudioStream:
-	if character_data and character_data.jump_sound:
+	if character_data:
 		return character_data.jump_sound
-	return _fallback_jump_sound
+	return null
 
 
 func _get_punch_sound_frame() -> int:
@@ -136,6 +130,7 @@ func _ready() -> void:
 	if character_data and character_data.sprite_frames:
 		anim.sprite_frames = character_data.sprite_frames
 
+	_fit_sprite_to_collider()
 	_half_width = _compute_half_width_from_collider()
 	call_deferred("_update_bounds_from_tilemap")
 
@@ -328,6 +323,49 @@ func _stop_walk_back() -> void:
 
 
 # =========================================================
+# SPRITE FITTING
+# =========================================================
+
+func _fit_sprite_to_collider() -> void:
+	var cs := get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if cs == null or cs.shape == null or anim.sprite_frames == null:
+		return
+
+	var collider_height := _get_collider_height(cs.shape)
+	if collider_height <= 0.0:
+		return
+
+	if not anim.sprite_frames.has_animation("idle"):
+		return
+
+	var frame_tex: Texture2D = anim.sprite_frames.get_frame_texture("idle", 0)
+	if frame_tex == null:
+		return
+
+	var frame_height := float(frame_tex.get_height())
+	if frame_height <= 0.0:
+		return
+
+	var factor := 1.0
+	if character_data:
+		factor = character_data.scale_factor
+
+	var s := (collider_height / frame_height) * factor
+	anim.scale = Vector2(s, s)
+	cs.scale = Vector2(factor, factor)
+
+
+func _get_collider_height(shape: Shape2D) -> float:
+	if shape is RectangleShape2D:
+		return (shape as RectangleShape2D).size.y
+	if shape is CapsuleShape2D:
+		return (shape as CapsuleShape2D).height
+	if shape is CircleShape2D:
+		return (shape as CircleShape2D).radius * 2.0
+	return 0.0
+
+
+# =========================================================
 # TILEMAP BOUNDS
 # =========================================================
 
@@ -408,13 +446,16 @@ func _play_if_changed(name: StringName) -> void:
 	anim.play(name)
 
 
+func _play_voice(stream: AudioStream) -> void:
+	if stream:
+		voice.stream = stream
+		voice.play()
+
+
 func _on_animated_sprite_2d_frame_changed() -> void:
 	if anim and anim.animation == "punch" and anim.frame == _get_punch_sound_frame():
-		voice.stream = _get_punch_sound()
-		voice.play()
+		_play_voice(_get_punch_sound())
 	elif anim and anim.animation == "kick" and anim.frame == _get_kick_sound_frame():
-		voice.stream = _get_kick_sound()
-		voice.play()
+		_play_voice(_get_kick_sound())
 	elif anim and anim.animation == "jump" and anim.frame == _get_jump_sound_frame():
-		voice.stream = _get_jump_sound()
-		voice.play()
+		_play_voice(_get_jump_sound())

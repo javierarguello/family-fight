@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="CharacterData" load_steps=7 format=3 uid="uid://ras2s18s1n4j"]
+
+[ext_resource type="Script" uid="uid://2yro0ceyv31g" path="res://scripts/character_data.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://bljpqhjnaqr3t" path="res://characters/pilar/audio/punch.wav" id="2_punch"]
+[ext_resource type="AudioStream" uid="uid://iynudmovot1o" path="res://characters/pilar/audio/double_punch.wav" id="3_double_punch"]
+[ext_resource type="AudioStream" uid="uid://d25ml43t7a5qv" path="res://characters/pilar/audio/kick.wav" id="4_kick"]
+[ext_resource type="AudioStream" uid="uid://c4clmqo7m8ard" path="res://characters/pilar/audio/jump.wav" id="5_jump"]
+[ext_resource type="SpriteFrames" uid="uid://d3olcltaa4c0x" path="res://characters/pilar/pilar_frames.tres" id="6_frames"]
+
+[resource]
+script = ExtResource("1_script")
+character_name = "Pilar"
+speed = 130.0
+jump_velocity = -300.0
+sprite_frames = ExtResource("6_frames")
+scale_factor = 1.5
+punch_sound = ExtResource("2_punch")
+double_punch_sound = ExtResource("3_double_punch")
+kick_sound = ExtResource("4_kick")
+jump_sound = ExtResource("5_jump")
+punch_sound_frame = 2
+kick_sound_frame = 1
+jump_sound_frame = 1

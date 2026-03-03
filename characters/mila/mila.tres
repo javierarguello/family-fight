@@ -1,17 +1,18 @@
-[gd_resource type="Resource" script_class="CharacterData" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="CharacterData" load_steps=7 format=3 uid="uid://dhwioghx4qvc4"]
 
-[ext_resource type="Script" path="res://scripts/character_data.gd" id="1_script"]
-[ext_resource type="AudioStream" path="res://audio/mila_punch.wav" id="2_punch"]
-[ext_resource type="AudioStream" path="res://audio/mila_double_punch.wav" id="3_double_punch"]
-[ext_resource type="AudioStream" path="res://audio/mila_power_kick.wav" id="4_kick"]
-[ext_resource type="AudioStream" path="res://audio/mila_jump.wav" id="5_jump"]
+[ext_resource type="Script" uid="uid://2yro0ceyv31g" path="res://scripts/character_data.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://dcoug47e2vl3p" path="res://characters/mila/audio/punch.wav" id="2_punch"]
+[ext_resource type="AudioStream" uid="uid://dv5u7xe5acu0m" path="res://characters/mila/audio/double_punch.wav" id="3_double_punch"]
+[ext_resource type="AudioStream" uid="uid://baafcmkvsph5r" path="res://characters/mila/audio/kick.wav" id="4_kick"]
+[ext_resource type="AudioStream" uid="uid://cvmwk1amuvqgd" path="res://characters/mila/audio/jump.wav" id="5_jump"]
+[ext_resource type="SpriteFrames" uid="uid://cud6n0qnsllix" path="res://characters/mila/mila_frames.tres" id="6_frames"]
 
 [resource]
 script = ExtResource("1_script")
 character_name = "Mila"
 speed = 130.0
 jump_velocity = -300.0
-sprite_frames = null
+sprite_frames = ExtResource("6_frames")
 punch_sound = ExtResource("2_punch")
 double_punch_sound = ExtResource("3_double_punch")
 kick_sound = ExtResource("4_kick")

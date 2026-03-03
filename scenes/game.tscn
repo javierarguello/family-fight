@@ -1,9 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://bbhx5vd0yuo6u"]
+[gd_scene load_steps=10 format=3 uid="uid://bbhx5vd0yuo6u"]
 
 [ext_resource type="Script" uid="uid://dhyavokmhacqb" path="res://scripts/camera_2d.gd" id="1_lbhrr"]
-[ext_resource type="Texture2D" uid="uid://bmkx78ag56pfc" path="res://sprites/kids-room.png" id="1_lnu2h"]
+[ext_resource type="Texture2D" uid="uid://bd3y8c24mlw8e" path="res://sprites/kids-room.png" id="1_lnu2h"]
 [ext_resource type="PackedScene" uid="uid://bj16y217wul51" path="res://scenes/player.tscn" id="1_uwrxv"]
 [ext_resource type="AudioStream" uid="uid://dsj4y1jiud1d6" path="res://audio/kids_room_track_sound.wav" id="4_lbhrr"]
+[ext_resource type="Resource" uid="uid://dhwioghx4qvc4" path="res://characters/mila/mila.tres" id="5_mila"]
+[ext_resource type="Resource" uid="uid://ras2s18s1n4j" path="res://characters/pilar/pilar.tres" id="6_pilar"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lbhrr"]
 texture = ExtResource("1_lnu2h")
@@ -52,6 +54,7 @@ z_index = 1
 position = Vector2(-80, 100)
 scale = Vector2(2, 2)
 opponent_path = NodePath("../Player2")
+character_data = ExtResource("5_mila")
 tilemap_path = NodePath("../TileMap")
 
 [node name="Player2" parent="." instance=ExtResource("1_uwrxv")]
@@ -60,6 +63,7 @@ position = Vector2(80, 100)
 scale = Vector2(2, 2)
 player_id = 2
 opponent_path = NodePath("../Player1")
+character_data = ExtResource("6_pilar")
 tilemap_path = NodePath("../TileMap")
 
 [node name="Floor" type="StaticBody2D" parent="."]

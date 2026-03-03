@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bbplisb0t4nwi"
-path="res://.godot/imported/animate-idle-stance-.png-93d6c3afae925dacfe71c4ccd863ea4b.ctex"
+uid="uid://yfwhbr8v3pdc"
+path="res://.godot/imported/idle.png-682e82a2fcb1b59424f8654209aaab6e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/animate-idle-stance-.png"
-dest_files=["res://.godot/imported/animate-idle-stance-.png-93d6c3afae925dacfe71c4ccd863ea4b.ctex"]
+source_file="res://characters/pilar/sprites/idle.png"
+dest_files=["res://.godot/imported/idle.png-682e82a2fcb1b59424f8654209aaab6e.ctex"]
 
 [params]
 

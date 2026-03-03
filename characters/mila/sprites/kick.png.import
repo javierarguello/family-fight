@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bdvqteavy4nd2"
-path="res://.godot/imported/animate-kick-for-a-f.png-bca5eaba28ce32ab32ac42a2a2b1686b.ctex"
+uid="uid://cmsnlm72eva84"
+path="res://.godot/imported/kick.png-bdac924d433635e683f43ff7ff85c045.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/animate-kick-for-a-f.png"
-dest_files=["res://.godot/imported/animate-kick-for-a-f.png-bca5eaba28ce32ab32ac42a2a2b1686b.ctex"]
+source_file="res://characters/mila/sprites/kick.png"
+dest_files=["res://.godot/imported/kick.png-bdac924d433635e683f43ff7ff85c045.ctex"]
 
 [params]
 

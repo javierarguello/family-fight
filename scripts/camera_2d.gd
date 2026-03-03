@@ -26,6 +26,10 @@ extends Camera2D
 @export var max_player_distance: float = 200.0
 @export var max_distance_zoom_out: float = -0.3
 
+# --- PLAYER CONTAINMENT ---
+## Margin in pixels from the edge of the visible area
+@export var containment_margin: float = 20.0
+
 var _player1: CharacterBody2D
 var _player2: CharacterBody2D
 var _tilemap: TileMap
@@ -49,6 +53,7 @@ func _process(delta: float) -> void:
 
 	_update_follow(delta)
 	_update_zoom(delta)
+	_clamp_players_to_view()
 
 # -------------------------
 # FOLLOW PLAYERS
@@ -130,3 +135,31 @@ func _update_limits_from_tilemap() -> void:
 	limit_right = int(ceil(right))
 	limit_top = int(floor(top))
 	limit_bottom = int(ceil(bottom))
+
+# -------------------------
+# PLAYER CONTAINMENT
+# -------------------------
+func _clamp_players_to_view() -> void:
+	if _player1 == null and _player2 == null:
+		return
+
+	var vp_size := get_viewport_rect().size
+	var half_w := (vp_size.x / zoom.x) * 0.5 - containment_margin
+	var half_h := (vp_size.y / zoom.y) * 0.5 - containment_margin
+
+	var cam_x := global_position.x
+	var cam_y := global_position.y
+	var left_bound := cam_x - half_w
+	var right_bound := cam_x + half_w
+	var top_bound := cam_y - half_h
+	var bottom_bound := cam_y + half_h
+
+	for player: CharacterBody2D in [_player1, _player2]:
+		if player == null:
+			continue
+		var p := player.global_position
+		p.x = clampf(p.x, left_bound, right_bound)
+		p.y = clampf(p.y, top_bound, bottom_bound)
+		if p != player.global_position:
+			player.global_position = p
+			player.velocity.x = 0.0
