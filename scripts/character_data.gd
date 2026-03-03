@@ -15,7 +15,7 @@ extends Resource
 @export var punch_damage: float = 8.0
 @export var kick_damage: float = 12.0
 ## Max distance (in local pixels, before scene scale) to land a hit
-@export var hit_range: float = 25.0
+@export var hit_range: float = 45.0
 
 @export_group("Visuals")
 @export var sprite_frames: SpriteFrames

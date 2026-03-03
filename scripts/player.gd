@@ -18,7 +18,7 @@ const DEFAULT_JUMP_VELOCITY := -300.0
 const DEFAULT_MAX_STAMINA := 100.0
 const DEFAULT_PUNCH_DAMAGE := 8.0
 const DEFAULT_KICK_DAMAGE := 12.0
-const DEFAULT_HIT_RANGE := 25.0
+const DEFAULT_HIT_RANGE := 45.0
 
 # ---- STAMINA ----
 var max_stamina: float = DEFAULT_MAX_STAMINA
@@ -41,6 +41,13 @@ var stamina: float = DEFAULT_MAX_STAMINA
 @export_range(1.0, 30.0, 1.0) var walk_fps: float = 12.0
 
 @onready var anim: AnimatedSprite2D = get_node_or_null(anim_path) as AnimatedSprite2D
+
+# ---- HIT EFFECT ----
+var _hit_textures: Array[Texture2D] = [
+	preload("res://sprites/hit1.png"),
+	preload("res://sprites/hit2.png"),
+]
+var _hit_sound: AudioStream = preload("res://audio/punch.wav")
 
 var is_attacking := false
 var current_attack: StringName = ""
@@ -316,6 +323,32 @@ func _try_hit(damage: float) -> void:
 	if dist <= world_range:
 		_hit_landed = true
 		_opponent.take_damage(damage)
+		_spawn_hit_effect()
+
+
+func _spawn_hit_effect() -> void:
+	var midpoint := (global_position + _opponent.global_position) * 0.5
+	# Random vertical offset for variety
+	midpoint.y += randf_range(-15.0, 5.0)
+
+	# Sprite (scaled to 20% — 80% smaller)
+	var sprite := Sprite2D.new()
+	sprite.texture = _hit_textures.pick_random()
+	sprite.global_position = midpoint
+	sprite.scale = Vector2(0.2, 0.2)
+	sprite.z_index = 100
+	get_parent().add_child(sprite)
+
+	# Sound
+	var sfx := AudioStreamPlayer2D.new()
+	sfx.stream = _hit_sound
+	sfx.global_position = midpoint
+	get_parent().add_child(sfx)
+	sfx.play()
+
+	# Auto-remove after delay
+	get_tree().create_timer(0.15).timeout.connect(sprite.queue_free)
+	sfx.finished.connect(sfx.queue_free)
 
 
 # =========================================================
@@ -505,12 +538,22 @@ func _play_voice(stream: AudioStream) -> void:
 		voice.play()
 
 
+func _get_hit_frame(attack_name: StringName) -> int:
+	if anim.sprite_frames == null or not anim.sprite_frames.has_animation(attack_name):
+		return 0
+	return anim.sprite_frames.get_frame_count(attack_name) / 2
+
+
 func _on_animated_sprite_2d_frame_changed() -> void:
-	if anim and anim.animation == "punch" and anim.frame == _get_punch_sound_frame():
-		_play_voice(_get_punch_sound())
-		_try_hit(_get_punch_damage())
-	elif anim and anim.animation == "kick" and anim.frame == _get_kick_sound_frame():
-		_play_voice(_get_kick_sound())
-		_try_hit(_get_kick_damage())
+	if anim and anim.animation == "punch":
+		if anim.frame == _get_punch_sound_frame():
+			_play_voice(_get_punch_sound())
+		if anim.frame == _get_hit_frame("punch"):
+			_try_hit(_get_punch_damage())
+	elif anim and anim.animation == "kick":
+		if anim.frame == _get_kick_sound_frame():
+			_play_voice(_get_kick_sound())
+		if anim.frame == _get_hit_frame("kick"):
+			_try_hit(_get_kick_damage())
 	elif anim and anim.animation == "jump" and anim.frame == _get_jump_sound_frame():
 		_play_voice(_get_jump_sound())

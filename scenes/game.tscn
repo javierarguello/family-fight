@@ -6,7 +6,7 @@
 [ext_resource type="AudioStream" uid="uid://dsj4y1jiud1d6" path="res://audio/kids_room_track_sound.wav" id="4_lbhrr"]
 [ext_resource type="Resource" uid="uid://dhwioghx4qvc4" path="res://characters/mila/mila.tres" id="5_mila"]
 [ext_resource type="Resource" uid="uid://ras2s18s1n4j" path="res://characters/pilar/pilar.tres" id="6_pilar"]
-[ext_resource type="PackedScene" path="res://scenes/hud.tscn" id="7_hud"]
+[ext_resource type="PackedScene" uid="uid://dkjjar57ftrkl" path="res://scenes/hud.tscn" id="7_hud"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lbhrr"]
 texture = ExtResource("1_lnu2h")
@@ -54,9 +54,17 @@ layer_2/z_index = 3
 z_index = 1
 position = Vector2(-80, 100)
 scale = Vector2(2, 2)
+player_id = null
 opponent_path = NodePath("../Player2")
 character_data = ExtResource("5_mila")
+anim_path = null
 tilemap_path = NodePath("../TileMap")
+clamp_margin_left = null
+clamp_margin_right = null
+clamp_debug_print = null
+attack_buffer_seconds = null
+last_frame_unlock_progress = null
+walk_fps = null
 
 [node name="Player2" parent="." instance=ExtResource("1_uwrxv")]
 z_index = 1
@@ -65,7 +73,14 @@ scale = Vector2(2, 2)
 player_id = 2
 opponent_path = NodePath("../Player1")
 character_data = ExtResource("6_pilar")
+anim_path = null
 tilemap_path = NodePath("../TileMap")
+clamp_margin_left = null
+clamp_margin_right = null
+clamp_debug_print = null
+attack_buffer_seconds = null
+last_frame_unlock_progress = null
+walk_fps = null
 
 [node name="Floor" type="StaticBody2D" parent="."]
 position = Vector2(1, 150)
